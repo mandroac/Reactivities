@@ -34,6 +34,13 @@ namespace API
             });
 
             services.SetupCustomServices();
+
+            services.AddCors(opt => {
+                opt.AddPolicy("CorsPolicy", policy => 
+                {
+                    policy.AllowAnyMethod().AllowAnyMethod().WithOrigins("http://localhost:3000");
+                });
+            });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -45,9 +52,10 @@ namespace API
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "API v1"));
             }
 
-            // app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseCors("CorsPolicy");
 
             app.UseAuthorization();
 
