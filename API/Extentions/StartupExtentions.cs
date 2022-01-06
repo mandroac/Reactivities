@@ -1,3 +1,5 @@
+using Application.Interfaces;
+using Application.Services;
 using Domain.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Persistence.Repositories;
@@ -11,7 +13,8 @@ namespace API.Extentions
         {
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IActivitiesRepository, ActivitiesRepository>();
-
+            services.AddScoped<IActivitiesService, ActivitiesService>();
+                
             return services;
         }
     }

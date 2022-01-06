@@ -34,7 +34,8 @@ namespace API
             });
 
             services.SetupCustomServices();
-
+            services.AddAutoMapper(typeof(Application.Mapper.MappingProfile).Assembly);
+            
             services.AddCors(opt => {
                 opt.AddPolicy("CorsPolicy", policy => 
                 {
