@@ -3,6 +3,7 @@ import agent from "../api/agent";
 import { Activity } from "../models/activity";
 
 export default class ActivityStore {
+
     activityRegistry = new Map<string, Activity>();
     selectedActivity: Activity | undefined = undefined;
     editMode = false;
@@ -16,6 +17,16 @@ export default class ActivityStore {
     get activitiesByDate(){
         return Array.from(this.activityRegistry.values()).sort((a, b) => 
             Date.parse(a.date) - Date.parse(b.date))
+    }
+
+    get groupedActivitiesByDate(){
+        return Object.entries(
+            this.activitiesByDate.reduce((activities, activity) => {
+                const date = activity.date;
+                activities[date] = activities[date] ? [...activities[date], activity] : [activity];
+                return activities;
+            }, {} as {[key: string]: Activity[]})
+        )
     }
 
     loadActivities = async () => {
