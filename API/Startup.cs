@@ -1,4 +1,6 @@
 using API.Extentions;
+using API.Middleware;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -34,8 +36,11 @@ namespace API
             });
 
             services.SetupCustomServices();
-            services.AddAutoMapper(typeof(Application.Mapper.MappingProfile).Assembly);
-            
+            services.AddAutoMapper(typeof(Application.Core.MappingProfile).Assembly);
+            services.AddFluentValidation(fv => {
+                fv.RegisterValidatorsFromAssemblyContaining<Application.Validation.ActivityValidation>();
+            });
+
             services.AddCors(opt => {
                 opt.AddPolicy("CorsPolicy", policy => 
                 {
@@ -46,9 +51,10 @@ namespace API
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseMiddleware<ExceptionMiddleware>();
+            
             if (env.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "API v1"));
             }

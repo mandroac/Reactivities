@@ -1,6 +1,7 @@
 using System;
-using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
+using Application.Core;
 using Application.Interfaces;
 using Domain.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -11,40 +12,58 @@ namespace API.Controllers
     public abstract class BaseApiController<T> : ControllerBase where T : BaseEntity
     {
         protected readonly IServiceBase<T> Service;
-        public BaseApiController(IServiceBase<T> service)
+        protected BaseApiController(IServiceBase<T> service)
         {
             Service = service;
         }
 
+        #region CRUD operations
+
         [HttpGet]
-        public virtual async Task<ActionResult<IEnumerable<T>>> GetAsync()
+        public virtual async Task<IActionResult> GetAsync()
         {
-            return Ok(await Service.GetAllAsync());
+            return HandleResult(await Service.GetAllAsync());
         }
 
         [HttpGet("{id}")]
-        public virtual async Task<ActionResult<T>> GetAsync(Guid id)
+        public virtual async Task<IActionResult> GetAsync(Guid id)
         {
-            return Ok(await Service.GetAsync(id));
+            return HandleResult(await Service.GetAsync(id));
         }
 
         [HttpPost]
-        public virtual async Task<ActionResult> CreateAsync(T entity)
+        public virtual async Task<IActionResult> CreateAsync(T entity)
         {
-            return Ok(await Service.CreateAsync(entity));
+            return HandleResult(await Service.CreateAsync(entity));
         }
 
         [HttpPut("{id}")]
-        public virtual async Task<ActionResult> UpdateAsync(Guid id, T updatedEntity)
+        public virtual async Task<IActionResult> UpdateAsync(Guid id, T updatedEntity)
         {
-            return Ok(await Service.UpdateAsync(id, updatedEntity));
+            return HandleResult(await Service.UpdateAsync(id, updatedEntity));
         }
 
         [HttpDelete("{id}")]
-        public virtual async Task<ActionResult> DeleteAsync(Guid id)
+        public virtual async Task<IActionResult> DeleteAsync(Guid id)
         {
-            await Service.DeleteAsync(id);
-            return NoContent();
+            return HandleResult(await Service.DeleteAsync(id));
         }
+        #endregion
+
+        #region Help Methods
+        protected virtual IActionResult HandleResult<TResult>([AllowNull]Result<TResult> result)
+        {
+            if(result == null) return NotFound();
+            if (result.IsSuccess)
+            {
+                return Ok(result.Value);
+            }
+            else
+            {
+                return BadRequest(result.Error);
+            }
+        }
+        #endregion
     }
+
 }
