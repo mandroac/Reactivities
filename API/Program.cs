@@ -1,7 +1,12 @@
 using System.Threading.Tasks;
 using API.Extentions;
+using Domain.Models;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Persistence.Configurations;
 
 namespace API
 {
@@ -9,10 +14,22 @@ namespace API
     {
         public static async Task Main(string[] args)
         {
-            await CreateHostBuilder(args)
-                .Build()
-                .MigrateDatabaseAsync().Result
-                .RunAsync();
+            var host = CreateHostBuilder(args).Build();
+            await host.MigrateDatabaseAsync();
+
+            using var scope = host.Services.CreateScope();
+            var services = scope.ServiceProvider;
+            try
+            {
+                var userManager = services.GetRequiredService<UserManager<User>>();
+                await SeedUsers.Seed(userManager);
+            }
+            catch (System.Exception ex)
+            {
+                var logger = services.GetRequiredService<ILogger<Program>>();
+                logger.LogError(ex, "An error occured when seeding users");
+            }
+            await host.RunAsync();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>

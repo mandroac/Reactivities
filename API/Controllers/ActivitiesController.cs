@@ -1,5 +1,9 @@
+using System;
+using System.Threading.Tasks;
 using Application.Interfaces;
 using Domain.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
@@ -7,6 +11,7 @@ namespace API.Controllers
     {
         public ActivitiesController(IActivitiesService service) 
         : base(service)
-        { }
+        { 
+        }
     }
 }

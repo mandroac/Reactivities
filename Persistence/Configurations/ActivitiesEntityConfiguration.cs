@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -9,7 +10,7 @@ namespace Persistence.Configurations
     {
         public void Configure(EntityTypeBuilder<Activity> builder)
         {
-            builder.HasData(
+            var list = new List<Activity>{
                 new Activity
                 {
                     Id = Guid.NewGuid(),
@@ -110,7 +111,8 @@ namespace Persistence.Configurations
                     City = "London",
                     Venue = "Cinema",
                 }
-            );
+            };
+            builder.HasData(list);
         }
     }
 }
