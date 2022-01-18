@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Domain.Models
 {
@@ -9,6 +10,8 @@ namespace Domain.Models
         public string Description { get; set; }  
         public string Category { get; set; }
         public string City { get; set; }
-        public string Venue { get; set; }    
+        public string Venue { get; set; }   
+        public bool IsCancelled { get; set; } 
+        public ICollection<ActivityAttendee> Attendees { get; set; } = new List<ActivityAttendee>();
     }
 }

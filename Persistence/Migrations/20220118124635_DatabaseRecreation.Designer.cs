@@ -9,8 +9,8 @@ using Persistence;
 namespace Persistence.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20220114083704_IdentityAdded")]
-    partial class IdentityAdded
+    [Migration("20220118124635_DatabaseRecreation")]
+    partial class DatabaseRecreation
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -25,128 +25,52 @@ namespace Persistence.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Category")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("City")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Description")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<bool>("IsCancelled")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Title")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Venue")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
                     b.ToTable("Activities");
+                });
 
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("2cdad5f3-32ae-46e3-acd2-fe91e2749032"),
-                            Category = "drinks",
-                            City = "London",
-                            Date = new DateTime(2021, 11, 14, 10, 37, 4, 161, DateTimeKind.Local).AddTicks(7082),
-                            Description = "Activity 2 months ago",
-                            Title = "Past Activity 1",
-                            Venue = "Pub"
-                        },
-                        new
-                        {
-                            Id = new Guid("57fcef56-2625-4d7e-8ff4-ecfcd8240ff6"),
-                            Category = "culture",
-                            City = "Paris",
-                            Date = new DateTime(2021, 12, 14, 10, 37, 4, 163, DateTimeKind.Local).AddTicks(9206),
-                            Description = "Activity 1 month ago",
-                            Title = "Past Activity 2",
-                            Venue = "Louvre"
-                        },
-                        new
-                        {
-                            Id = new Guid("1f7c4c0b-f322-4335-9c7f-d394ac4d7526"),
-                            Category = "culture",
-                            City = "London",
-                            Date = new DateTime(2022, 2, 14, 10, 37, 4, 163, DateTimeKind.Local).AddTicks(9238),
-                            Description = "Activity 1 month in future",
-                            Title = "Future Activity 1",
-                            Venue = "Natural History Museum"
-                        },
-                        new
-                        {
-                            Id = new Guid("27115115-3a8b-4981-9cc0-a20a13fa5d3b"),
-                            Category = "music",
-                            City = "London",
-                            Date = new DateTime(2022, 3, 14, 10, 37, 4, 163, DateTimeKind.Local).AddTicks(9245),
-                            Description = "Activity 2 months in future",
-                            Title = "Future Activity 2",
-                            Venue = "O2 Arena"
-                        },
-                        new
-                        {
-                            Id = new Guid("f595e9d6-3bd4-4a49-b249-54722d49974d"),
-                            Category = "drinks",
-                            City = "London",
-                            Date = new DateTime(2022, 4, 14, 10, 37, 4, 163, DateTimeKind.Local).AddTicks(9258),
-                            Description = "Activity 3 months in future",
-                            Title = "Future Activity 3",
-                            Venue = "Another pub"
-                        },
-                        new
-                        {
-                            Id = new Guid("e1b6ad0f-f6f5-4c71-87ff-064125645ce2"),
-                            Category = "drinks",
-                            City = "London",
-                            Date = new DateTime(2022, 5, 14, 10, 37, 4, 163, DateTimeKind.Local).AddTicks(9262),
-                            Description = "Activity 4 months in future",
-                            Title = "Future Activity 4",
-                            Venue = "Yet another pub"
-                        },
-                        new
-                        {
-                            Id = new Guid("5c61b6c8-e429-44d8-9be2-6c55a84c710b"),
-                            Category = "drinks",
-                            City = "London",
-                            Date = new DateTime(2022, 6, 14, 10, 37, 4, 163, DateTimeKind.Local).AddTicks(9267),
-                            Description = "Activity 5 months in future",
-                            Title = "Future Activity 5",
-                            Venue = "Just another pub"
-                        },
-                        new
-                        {
-                            Id = new Guid("bfaefec9-7441-4ac8-877b-ac86a375b064"),
-                            Category = "music",
-                            City = "London",
-                            Date = new DateTime(2022, 7, 14, 10, 37, 4, 163, DateTimeKind.Local).AddTicks(9271),
-                            Description = "Activity 6 months in future",
-                            Title = "Future Activity 6",
-                            Venue = "Roundhouse Camden"
-                        },
-                        new
-                        {
-                            Id = new Guid("a1c52781-57f2-486d-b250-eec043c9c175"),
-                            Category = "travel",
-                            City = "London",
-                            Date = new DateTime(2022, 8, 14, 10, 37, 4, 163, DateTimeKind.Local).AddTicks(9278),
-                            Description = "Activity 2 months ago",
-                            Title = "Future Activity 7",
-                            Venue = "Somewhere on the Thames"
-                        },
-                        new
-                        {
-                            Id = new Guid("be4972c6-92ec-4bdd-ac0d-0653ffa917a7"),
-                            Category = "film",
-                            City = "London",
-                            Date = new DateTime(2022, 9, 14, 10, 37, 4, 163, DateTimeKind.Local).AddTicks(9282),
-                            Description = "Activity 8 months in future",
-                            Title = "Future Activity 8",
-                            Venue = "Cinema"
-                        });
+            modelBuilder.Entity("Domain.Models.ActivityAttendee", b =>
+                {
+                    b.Property<Guid>("ActivityId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsHost")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("ActivityId", "UserId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ActivityAttendees");
                 });
 
             modelBuilder.Entity("Domain.Models.User", b =>
@@ -166,6 +90,7 @@ namespace Persistence.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("DisplayName")
+                        .HasMaxLength(20)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Email")
@@ -346,6 +271,25 @@ namespace Persistence.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
+            modelBuilder.Entity("Domain.Models.ActivityAttendee", b =>
+                {
+                    b.HasOne("Domain.Models.Activity", "Activity")
+                        .WithMany("Attendees")
+                        .HasForeignKey("ActivityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Models.User", "User")
+                        .WithMany("Activities")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Activity");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", null)
@@ -395,6 +339,16 @@ namespace Persistence.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Domain.Models.Activity", b =>
+                {
+                    b.Navigation("Attendees");
+                });
+
+            modelBuilder.Entity("Domain.Models.User", b =>
+                {
+                    b.Navigation("Activities");
                 });
 #pragma warning restore 612, 618
         }

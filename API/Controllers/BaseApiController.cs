@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Application.Core;
+using Application.DTOs;
 using Application.Interfaces;
 using Domain.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -9,10 +10,10 @@ using Microsoft.AspNetCore.Mvc;
 namespace API.Controllers
 {
     [ApiController, Route("api/[controller]")]
-    public abstract class BaseApiController<T> : ControllerBase where T : BaseEntity
+    public abstract class BaseApiController<TDto> : ControllerBase where TDto : BaseDto
     {
-        protected readonly IServiceBase<T> Service;
-        protected BaseApiController(IServiceBase<T> service)
+        protected readonly IServiceBase<TDto> Service;
+        protected BaseApiController(IServiceBase<TDto> service)
         {
             Service = service;
         }
@@ -32,15 +33,15 @@ namespace API.Controllers
         }
 
         [HttpPost]
-        public virtual async Task<IActionResult> CreateAsync(T entity)
+        public virtual async Task<IActionResult> CreateAsync(TDto dto)
         {
-            return HandleResult(await Service.CreateAsync(entity));
+            return HandleResult(await Service.CreateAsync(dto));
         }
 
         [HttpPut("{id}")]
-        public virtual async Task<IActionResult> UpdateAsync(Guid id, T updatedEntity)
+        public virtual async Task<IActionResult> UpdateAsync(Guid id, TDto updatedDto)
         {
-            return HandleResult(await Service.UpdateAsync(id, updatedEntity));
+            return HandleResult(await Service.UpdateAsync(id, updatedDto));
         }
 
         [HttpDelete("{id}")]

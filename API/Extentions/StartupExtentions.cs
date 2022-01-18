@@ -4,7 +4,9 @@ using Application.Interfaces;
 using Application.Services;
 using Domain.Interfaces;
 using Domain.Models;
+using Infrastructure.Security;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,8 +23,9 @@ namespace API.Extentions
         {
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IActivitiesRepository, ActivitiesRepository>();
+            services.AddScoped<IActivityAttendeesRepository, ActivityAttendeesRepository>();
             services.AddScoped<IActivitiesService, ActivitiesService>();
-            services.AddScoped<TokenService>();
+            services.AddScoped<IUserAccessor, UserAccessor>();
                 
             return services;
         }
@@ -48,6 +51,15 @@ namespace API.Extentions
                     ValidateAudience = false
                 };
             });
+            services.AddAuthorization(opt  => 
+            {
+                opt.AddPolicy("IsActivityHost", policy => 
+                {
+                    policy.Requirements.Add(new IsHostRequirement());
+                });
+            });
+            services.AddTransient<IAuthorizationHandler, IsHostRequirementHandler>();
+            services.AddScoped<TokenService>();
 
             return services;
         }

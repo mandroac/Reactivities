@@ -1,15 +1,37 @@
+using System;
+using System.Threading.Tasks;
+using Application.DTOs;
 using Application.Interfaces;
-using Domain.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
-    [AllowAnonymous]
-    public class ActivitiesController : BaseApiController<Activity>
+    public class ActivitiesController : BaseApiController<ActivityDto>
     {
-        public ActivitiesController(IActivitiesService service) 
-        : base(service)
-        { 
+        private readonly IActivitiesService _activitiesService;
+        public ActivitiesController(IActivitiesService activitiesService)
+        : base(activitiesService)
+        {
+            _activitiesService = activitiesService;
+        }
+
+        [HttpPost("{id}/attend")]
+        public async Task<IActionResult> Attend(Guid id)
+        {
+            return HandleResult(await _activitiesService.UpdateAttendanceAsync(id));
+        }
+
+        [Authorize(Policy = "IsActivityHost")]
+        public override async Task<IActionResult> UpdateAsync(Guid id, ActivityDto updatedDto)
+        {
+            return await base.UpdateAsync(id, updatedDto);
+        }
+
+        [Authorize(Policy = "IsActivityHost")]
+        public override async Task<IActionResult> DeleteAsync(Guid id)
+        {
+            return await base.DeleteAsync(id);
         }
     }
 }

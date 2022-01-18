@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using API.Extentions;
+using Domain.Interfaces;
 using Domain.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -22,7 +23,9 @@ namespace API
             try
             {
                 var userManager = services.GetRequiredService<UserManager<User>>();
-                await SeedUsers.Seed(userManager);
+                var activitiesRepository = services.GetRequiredService<IActivitiesRepository>();
+                var unitOfWork = services.GetRequiredService<IUnitOfWork>();
+                await Seed.SeedData(activitiesRepository, unitOfWork, userManager);
             }
             catch (System.Exception ex)
             {

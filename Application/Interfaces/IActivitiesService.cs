@@ -1,9 +1,12 @@
-using Domain.Models;
+using System;
+using System.Threading.Tasks;
+using Application.Core;
+using Application.DTOs;
 
 namespace Application.Interfaces
 {
-    public interface IActivitiesService : IServiceBase<Activity>
+    public interface IActivitiesService : IServiceBase<ActivityDto>
     {
-
+        Task<Result<ActivityDto>> UpdateAttendanceAsync(Guid activityId);
     }
 }
