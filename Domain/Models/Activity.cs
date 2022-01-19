@@ -3,8 +3,9 @@ using System.Collections.Generic;
 
 namespace Domain.Models
 {
-    public class Activity : BaseEntity
+    public class Activity : BaseEntity<Guid>
     {
+        public new Guid Id { get; set; } = Guid.NewGuid();
         public string Title { get; set; }
         public DateTime Date { get; set; }
         public string Description { get; set; }  

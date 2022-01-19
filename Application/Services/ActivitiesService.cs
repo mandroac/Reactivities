@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Services
 {
-    public class ActivitiesService : ServiceBase<ActivityDto, Activity>, IActivitiesService
+    public class ActivitiesService : ServiceBase<ActivityDto, Activity, Guid>, IActivitiesService
     {
         private readonly IUserAccessor _userAccessor;
         private readonly UserManager<User> _userManager;

@@ -1,6 +1,5 @@
 using API.Extentions;
 using API.Middleware;
-using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -43,11 +42,8 @@ namespace API
             });
 
             services.SetupCustomServices();
+            services.SetupCustomConfigurations(Configuration);
             services.AddIdentityServices(Configuration);
-            services.AddAutoMapper(typeof(Application.Core.MappingProfile).Assembly);
-            services.AddFluentValidation(fv => {
-                fv.RegisterValidatorsFromAssemblyContaining<Application.Validation.ActivityValidation>();
-            });
 
             services.AddCors(opt => {
                 opt.AddPolicy("CorsPolicy", policy => 

@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using API.Controllers.Base;
 using Application.DTOs;
 using Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -7,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
-    public class ActivitiesController : BaseApiController<ActivityDto>
+    public class ActivitiesController : BaseCrudApiController<ActivityDto, Guid>
     {
         private readonly IActivitiesService _activitiesService;
         public ActivitiesController(IActivitiesService activitiesService)

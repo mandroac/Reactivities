@@ -1,3 +1,4 @@
+using System.Linq;
 using Domain.Models;
 
 namespace API.DTOs
@@ -22,7 +23,7 @@ namespace API.DTOs
             DisplayName = user.DisplayName;
             Token = token;
             Username = user.UserName;
-            Image = null;
+            Image = user?.Photos?.FirstOrDefault(x => x.IsMain)?.Url;
         }
         public UserDto()
         {

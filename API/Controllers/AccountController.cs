@@ -28,7 +28,8 @@ namespace API.Controllers
         [HttpPost("login")]
         public async Task<ActionResult<UserDto>> Login(LoginDto loginDto)
         {
-            var user = await _userManager.FindByEmailAsync(loginDto.Email);
+            var user = await _userManager.Users.Include(p => p.Photos)
+                .FirstOrDefaultAsync(x => x.Email == loginDto.Email);
             if (user == null)
             {
                 return Unauthorized();
@@ -38,7 +39,7 @@ namespace API.Controllers
 
             if (result.Succeeded)
             {
-                return new UserDto(user.DisplayName, _tokenService.CreateToken(user), user.UserName, null);
+                return new UserDto(user, _tokenService.CreateToken(user));
             }
             else return Unauthorized();
         }
@@ -57,7 +58,8 @@ namespace API.Controllers
                 return ValidationProblem(ModelState);
             }
 
-            var user = new User{
+            var user = new User
+            {
                 DisplayName = registerDto.DisplayName,
                 Email = registerDto.Email,
                 UserName = registerDto.Username
@@ -74,7 +76,8 @@ namespace API.Controllers
         [HttpGet, Authorize]
         public async Task<ActionResult<UserDto>> GetCurrentUser()
         {
-            var user = await _userManager.FindByEmailAsync(User.FindFirstValue(ClaimTypes.Email));
+            var user = await _userManager.Users.Include(p => p.Photos)
+                .FirstOrDefaultAsync(x => x.Email == User.FindFirstValue(ClaimTypes.Email));
             return new UserDto(user, _tokenService.CreateToken(user));
         }
     }

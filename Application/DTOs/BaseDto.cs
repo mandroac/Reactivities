@@ -1,9 +1,7 @@
-using System;
-
 namespace Application.DTOs
 {
-    public abstract class BaseDto
+    public abstract class BaseDto<TKey>
     {
-        public Guid Id { get; set; }
+        public TKey Id { get; set; }
     }
 }

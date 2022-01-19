@@ -1,10 +1,14 @@
 using System.Text;
 using API.Services;
 using Application.Interfaces;
+using Application.Photos;
 using Application.Services;
 using Domain.Interfaces;
 using Domain.Models;
+using FluentValidation.AspNetCore;
+using Infrastructure.Photos;
 using Infrastructure.Security;
+using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -24,9 +28,19 @@ namespace API.Extentions
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IActivitiesRepository, ActivitiesRepository>();
             services.AddScoped<IActivityAttendeesRepository, ActivityAttendeesRepository>();
+            services.AddScoped<IPhotosRepository, PhotosRepository>();
+            services.AddScoped<IUsersRepository, UsersRepository>();
             services.AddScoped<IActivitiesService, ActivitiesService>();
             services.AddScoped<IUserAccessor, UserAccessor>();
-                
+            services.AddScoped<IPhotoAccessor, PhotoAccessor>();
+
+            services.AddAutoMapper(typeof(Application.Core.MappingProfile).Assembly);
+            services.AddFluentValidation(fv =>
+            {
+                fv.RegisterValidatorsFromAssemblyContaining<Application.Validation.ActivityValidation>();
+            });
+            services.AddMediatR(typeof(Add).Assembly);
+
             return services;
         }
 
@@ -34,7 +48,8 @@ namespace API.Extentions
         {
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["TokenKey"]));
 
-            services.AddIdentityCore<User>(opt => {
+            services.AddIdentityCore<User>(opt =>
+            {
                 opt.Password.RequireUppercase = false;
                 opt.Password.RequireNonAlphanumeric = false;
             })
@@ -42,7 +57,8 @@ namespace API.Extentions
             .AddSignInManager<SignInManager<User>>();
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            .AddJwtBearer(opt => {
+            .AddJwtBearer(opt =>
+            {
                 opt.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
@@ -51,9 +67,9 @@ namespace API.Extentions
                     ValidateAudience = false
                 };
             });
-            services.AddAuthorization(opt  => 
+            services.AddAuthorization(opt =>
             {
-                opt.AddPolicy("IsActivityHost", policy => 
+                opt.AddPolicy("IsActivityHost", policy =>
                 {
                     policy.Requirements.Add(new IsHostRequirement());
                 });
@@ -61,6 +77,12 @@ namespace API.Extentions
             services.AddTransient<IAuthorizationHandler, IsHostRequirementHandler>();
             services.AddScoped<TokenService>();
 
+            return services;
+        }
+
+        public static IServiceCollection SetupCustomConfigurations(this IServiceCollection services, IConfiguration config)
+        {
+            services.Configure<CloudinarySettings>(config.GetSection("Cloudinary"));
             return services;
         }
     }

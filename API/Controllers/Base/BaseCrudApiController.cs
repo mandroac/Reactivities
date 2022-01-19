@@ -7,13 +7,13 @@ using Application.Interfaces;
 using Domain.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace API.Controllers
+namespace API.Controllers.Base
 {
     [ApiController, Route("api/[controller]")]
-    public abstract class BaseApiController<TDto> : ControllerBase where TDto : BaseDto
+    public abstract class BaseCrudApiController<TDto, TKey> : ControllerBase where TDto : BaseDto<TKey>
     {
-        protected readonly IServiceBase<TDto> Service;
-        protected BaseApiController(IServiceBase<TDto> service)
+        protected readonly IServiceBase<TDto, TKey> Service;
+        protected BaseCrudApiController(IServiceBase<TDto, TKey> service)
         {
             Service = service;
         }
@@ -27,7 +27,7 @@ namespace API.Controllers
         }
 
         [HttpGet("{id}")]
-        public virtual async Task<IActionResult> GetAsync(Guid id)
+        public virtual async Task<IActionResult> GetAsync(TKey id)
         {
             return HandleResult(await Service.GetAsync(id));
         }
@@ -39,13 +39,13 @@ namespace API.Controllers
         }
 
         [HttpPut("{id}")]
-        public virtual async Task<IActionResult> UpdateAsync(Guid id, TDto updatedDto)
+        public virtual async Task<IActionResult> UpdateAsync(TKey id, TDto updatedDto)
         {
             return HandleResult(await Service.UpdateAsync(id, updatedDto));
         }
 
         [HttpDelete("{id}")]
-        public virtual async Task<IActionResult> DeleteAsync(Guid id)
+        public virtual async Task<IActionResult> DeleteAsync(TKey id)
         {
             return HandleResult(await Service.DeleteAsync(id));
         }

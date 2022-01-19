@@ -1,5 +1,4 @@
 using AutoMapper;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Application.Interfaces;
@@ -10,13 +9,15 @@ using Application.DTOs;
 
 namespace Application.Services
 {
-    public class ServiceBase<TDto, TEntity> : IServiceBase<TDto> where TDto : BaseDto where TEntity : BaseEntity
+    public class ServiceBase<TDto, TEntity, TKey> : IServiceBase<TDto, TKey> 
+    where TDto : BaseDto<TKey>
+    where TEntity : BaseEntity<TKey>
     {
-        protected readonly IRepositoryBase<TEntity> Repository;
+        protected readonly IRepositoryBase<TEntity, TKey> Repository;
         protected readonly IUnitOfWork UnitOfWork;
         protected readonly IMapper Mapper;
 
-        public ServiceBase(IRepositoryBase<TEntity> repository, IUnitOfWork unitOfWork, IMapper mapper)
+        public ServiceBase(IRepositoryBase<TEntity, TKey> repository, IUnitOfWork unitOfWork, IMapper mapper)
         {
             Mapper = mapper;
             Repository = repository;
@@ -37,7 +38,7 @@ namespace Application.Services
             }
         }
 
-        public virtual async Task<Result<string>> DeleteAsync(Guid id)
+        public virtual async Task<Result<string>> DeleteAsync(TKey id)
         {
             var entity = await Repository.GetAsync(id);
             if (entity == null)
@@ -65,7 +66,7 @@ namespace Application.Services
             return Result<IEnumerable<TDto>>.Success(dtos);
         }
 
-        public async Task<Result<TDto>> GetAsync(Guid id)
+        public async Task<Result<TDto>> GetAsync(TKey id)
         {
             var entity = await Repository.GetAsync(id);
             var dto = Mapper.Map<TDto>(entity);
@@ -79,7 +80,7 @@ namespace Application.Services
             }
         }
 
-        public virtual async Task<Result<TDto>> UpdateAsync(Guid id, TDto updatedEntityDto)
+        public virtual async Task<Result<TDto>> UpdateAsync(TKey id, TDto updatedEntityDto)
         {
             var entity = await Repository.GetAsync(id);
             if (entity == null)

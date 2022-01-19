@@ -5,7 +5,7 @@ using Application.DTOs;
 
 namespace Application.Interfaces
 {
-    public interface IActivitiesService : IServiceBase<ActivityDto>
+    public interface IActivitiesService : IServiceBase<ActivityDto, Guid>
     {
         Task<Result<ActivityDto>> UpdateAttendanceAsync(Guid activityId);
     }

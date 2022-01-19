@@ -1,9 +1,7 @@
-using System;
-
 namespace Domain.Models
 {
-    public abstract class BaseEntity
+    public abstract class BaseEntity<T>
     {
-        public Guid Id { get; set; } = Guid.NewGuid();
+        public T Id { get; set; }
     }
 }

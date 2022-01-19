@@ -4,13 +4,14 @@ using System.Threading.Tasks;
 
 namespace Domain.Interfaces
 {
-    public interface IRepositoryBase<T> where T : class
+    public interface IRepositoryBase<TEntity, TKey> 
+    where TEntity : class
     {
-        Task<T> GetAsync(Guid id);
-        Task<IEnumerable<T>> GetAllAsync();
-        Task CreateAsync(T entity);
-        Task CreateRangeAsync(IEnumerable<T> entities);
-        void Update(T entity);
-        void Delete(T entity);
+        Task<TEntity> GetAsync(TKey id);
+        Task<IEnumerable<TEntity>> GetAllAsync();
+        Task CreateAsync(TEntity entity);
+        Task CreateRangeAsync(IEnumerable<TEntity> entities);
+        void Update(TEntity entity);
+        void Delete(TEntity entity);
     }
 }
