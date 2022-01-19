@@ -1,7 +1,5 @@
-using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using API.Controllers.Base;
-using Application.Core;
 using Application.Photos;
 using Microsoft.AspNetCore.Mvc;
 
@@ -26,19 +24,6 @@ namespace API.Controllers
         public async Task<IActionResult> Delete(string id)
         {
             return HandleResult(await Mediator.Send(new Delete.Command{Id = id}));
-        }
-
-        protected virtual IActionResult HandleResult<TResult>([AllowNull]Result<TResult> result)
-        {
-            if(result == null) return NotFound();
-            if (result.IsSuccess)
-            {
-                return Ok(result.Value);
-            }
-            else
-            {
-                return BadRequest(result.Error);
-            }
         }
     }
 }
