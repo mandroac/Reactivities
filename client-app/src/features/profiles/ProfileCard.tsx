@@ -15,7 +15,7 @@ export default observer(function ProfileCard({profile}: Props){
             <Image src={profile.image || '/assets/user.png'}  />
             <CardContent>
                 <CardHeader content={profile.displayName} />
-                <CardDescription content="Bio goes here" />
+                <CardDescription content={profile.bio} />
             </CardContent>
             <CardContent extra>
                 <Icon name="user" />

@@ -1,6 +1,6 @@
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
-import { Link, useHistory, useParams } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 import { Button, Header, Segment } from "semantic-ui-react";
 import LoadingComponent from "../../../app/layout/LoadingComponent";
 import { useStore } from "../../../app/stores/store";
@@ -80,7 +80,7 @@ export default observer(function ActivityForm() {
                             disabled={isSubmitting || !dirty || !isValid}
                             loading={isSubmitting} floated="right" 
                             positive type={"submit"} content={"Submit"} />
-                        <Button floated="right" type={"button"} content={"Cancel"} as={Link} to={'/activities'} />
+                        <Button floated="right" type={"button"} content={"Cancel"} onClick={() => history.goBack()} />
                     </Form>
                 )}
             </Formik>

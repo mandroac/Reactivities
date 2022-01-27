@@ -69,12 +69,11 @@ namespace API.Extentions
             });
             services.AddAuthorization(opt =>
             {
-                opt.AddPolicy("IsActivityHost", policy =>
-                {
-                    policy.Requirements.Add(new IsHostRequirement());
-                });
+                opt.AddPolicy("IsActivityHost", policy => policy.Requirements.Add(new IsHostRequirement()));
+                opt.AddPolicy("IsAccountOwner", policy => policy.Requirements.Add(new IsAccountOwnerRequirement()));
             });
             services.AddTransient<IAuthorizationHandler, IsHostRequirementHandler>();
+            services.AddTransient<IAuthorizationHandler, IsAccountOwnerRequirementHandler>();
             services.AddScoped<TokenService>();
 
             return services;

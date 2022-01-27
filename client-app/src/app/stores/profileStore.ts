@@ -3,7 +3,7 @@ import agent from "../api/agent";
 import { Photo, Profile } from "../models/profile";
 import { store } from "./store";
 
-export default class ProfileStore{
+export default class ProfileStore {
     profile: Profile | null = null;
     loadingProfile = false;
     loading = false;
@@ -13,14 +13,14 @@ export default class ProfileStore{
         makeAutoObservable(this);
     }
 
-    get isCurrentUser(){
-        
-        if(store.userStore.user && this.profile){
+    get isCurrentUser() {
+
+        if (store.userStore.user && this.profile) {
             return store.userStore.user.username === this.profile.username;
         }
         return false;
     }
-    
+
     loadProfile = async (username: string) => {
         this.loadingProfile = true;
         try {
@@ -32,6 +32,22 @@ export default class ProfileStore{
         } catch (error) {
             console.log(error);
             runInAction(() => this.loadingProfile = false);
+        }
+    }
+
+    updateProfile = async (username: string, profile: Partial<Profile>) => {
+        this.loading = true;
+        try {
+            const updatedProfile = await agent.Profiles.update(username, profile);
+            if (profile.displayName && profile.displayName !==
+                store.userStore.user?.displayName) {
+                store.userStore.setDisplayName(profile.displayName);
+            }
+            this.profile = updatedProfile;
+            this.loading = false;
+        } catch (error) {
+            console.log(error);
+            runInAction(() => this.loading = false);
         }
     }
 
@@ -66,7 +82,7 @@ export default class ProfileStore{
                     this.loading = false;
                 }
             })
-            
+
         } catch (error) {
             console.log(error);
             runInAction(() => this.loading = false);
@@ -79,7 +95,7 @@ export default class ProfileStore{
             await agent.Profiles.setMainPhoto(photo.id);
             store.userStore.setImage(photo.url);
             runInAction(() => {
-                if (this.profile && this.profile.photos){
+                if (this.profile && this.profile.photos) {
                     this.profile.photos.find(p => p.isMain)!.isMain = false;
                     this.profile.photos.find(p => p.id === photo.id)!.isMain = true;
                     this.profile.image = photo.url;
