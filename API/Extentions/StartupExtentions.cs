@@ -1,4 +1,5 @@
 using System.Text;
+using System.Threading.Tasks;
 using API.Services;
 using Application.Interfaces;
 using Application.Photos;
@@ -26,11 +27,16 @@ namespace API.Extentions
         public static IServiceCollection SetupCustomServices(this IServiceCollection services)
         {
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+
             services.AddScoped<IActivitiesRepository, ActivitiesRepository>();
             services.AddScoped<IActivityAttendeesRepository, ActivityAttendeesRepository>();
             services.AddScoped<IPhotosRepository, PhotosRepository>();
             services.AddScoped<IUsersRepository, UsersRepository>();
+            services.AddScoped<ICommentsRepository, CommentsRepository>();
+
             services.AddScoped<IActivitiesService, ActivitiesService>();
+            services.AddScoped<ICommentsService, CommentsService>();
+
             services.AddScoped<IUserAccessor, UserAccessor>();
             services.AddScoped<IPhotoAccessor, PhotoAccessor>();
 
@@ -40,6 +46,7 @@ namespace API.Extentions
                 fv.RegisterValidatorsFromAssemblyContaining<Application.Validation.ActivityValidation>();
             });
             services.AddMediatR(typeof(Add).Assembly);
+            services.AddSignalR();
 
             return services;
         }
@@ -65,6 +72,20 @@ namespace API.Extentions
                     IssuerSigningKey = key,
                     ValidateIssuer = false,
                     ValidateAudience = false
+                };
+                opt.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context => 
+                    {
+                        var accessToken = context.Request.Query["access_token"];
+                        var path = context.HttpContext.Request.Path;
+                        if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/chat"))
+                        {
+                            context.Token = accessToken;
+                        }
+
+                        return Task.CompletedTask;
+                    }
                 };
             });
             services.AddAuthorization(opt =>

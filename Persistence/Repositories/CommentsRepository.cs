@@ -17,7 +17,7 @@ namespace Persistence.Repositories
         public async Task<IEnumerable<Comment>> GetAllCommentsOfActivityAsync(Guid activityId) =>
             await DbSet.Include(c => c.Activity)
                 .Include(c => c.Author).ThenInclude(a => a.Photos)
-                .Where(c => c.Activity.Id == activityId).OrderBy(c => c.CreatedAt).ToListAsync();
+                .Where(c => c.Activity.Id == activityId).OrderByDescending(c => c.CreatedAt).ToListAsync();
         
     }
 }

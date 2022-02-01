@@ -80,9 +80,6 @@ namespace Application.Services
 
         public async Task<Result<IEnumerable<CommentDto>>> GetAllCommentsOfActivity(Guid activityId)
         {
-            var activity = await _activitiesRepository.GetAsync(activityId);
-            if(activity == null) return null;
-
             var comments = await _repository.GetAllCommentsOfActivityAsync(activityId);
             var commentDtos = Mapper.Map<IEnumerable<CommentDto>>(comments);
 

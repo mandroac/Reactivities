@@ -1,11 +1,7 @@
-import { Form, Formik } from "formik";
 import { observer } from "mobx-react-lite";
-import React, { useState } from "react";
+import { useState } from "react";
 import { Button, Container, Divider, Grid, Header, Tab } from "semantic-ui-react";
 import { useStore } from "../../app/stores/store";
-import * as Yup from 'yup';
-import CustomTextInput from "../../app/common/form/CustomTextInput";
-import CustomTextArea from "../../app/common/form/CustomTextArea";
 import ProfileEditForm from "./ProfileEditForm";
 
 export default observer(function ProfileAbout() {
