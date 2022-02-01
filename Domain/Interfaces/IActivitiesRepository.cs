@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Domain.Models;
 
 namespace Domain.Interfaces

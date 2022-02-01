@@ -66,7 +66,7 @@ namespace Application.Services
             return Result<IEnumerable<TDto>>.Success(dtos);
         }
 
-        public async Task<Result<TDto>> GetAsync(TKey id)
+        public virtual async Task<Result<TDto>> GetAsync(TKey id)
         {
             var entity = await Repository.GetAsync(id);
             var dto = Mapper.Map<TDto>(entity);

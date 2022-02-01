@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Domain.Interfaces
@@ -9,6 +10,7 @@ namespace Domain.Interfaces
     {
         Task<TEntity> GetAsync(TKey id);
         Task<IEnumerable<TEntity>> GetAllAsync();
+        IQueryable<TEntity> GetAllAsQueryable();
         Task CreateAsync(TEntity entity);
         Task CreateRangeAsync(IEnumerable<TEntity> entities);
         void Update(TEntity entity);

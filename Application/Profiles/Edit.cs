@@ -20,20 +20,18 @@ namespace Application.Profiles
 
             public class Handler : IRequestHandler<Command, Result<Profile>>
             {
-                private readonly DbSet<User> _users;
+                private readonly DataContext _context;
                 private readonly IMapper _mapper;
-                private readonly IUnitOfWork _unitOfWork;
 
-                public Handler(DataContext context, IMapper mapper, IUnitOfWork unitOfWork)
+                public Handler(DataContext context, IMapper mapper)
                 {
-                    _unitOfWork = unitOfWork;
                     _mapper = mapper;
-                    _users = context.Users;
+                    _context = context;
                 }
 
                 public async Task<Result<Profile>> Handle(Command request, CancellationToken cancellationToken)
                 {
-                    var user = await _users.Include(u => u.Photos)
+                    var user = await _context.Users.Include(u => u.Photos)
                         .SingleOrDefaultAsync(u => u.UserName == request.Username);
 
                     if (user == null) return null;
@@ -41,8 +39,8 @@ namespace Application.Profiles
                     if (request.DisplayName != null && request.DisplayName.Length > 0) user.DisplayName = request.DisplayName;
                     if (request.Bio != null) user.Bio = request.Bio;
                     
-                    _users.Update(user);
-                    var result = await _unitOfWork.SaveAsync() > 0;
+                    _context.Users.Update(user);
+                    var result = await _context.SaveChangesAsync() > 0;
 
                     return result
                         ? Result<Profile>.Success(_mapper.Map<Profile>(user))

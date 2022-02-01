@@ -1,10 +1,12 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Application.Core;
 using Application.DTOs;
 using Application.Interfaces;
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Domain.Interfaces;
 using Domain.Models;
 using Microsoft.AspNetCore.Identity;
@@ -17,7 +19,7 @@ namespace Application.Services
         private readonly IUserAccessor _userAccessor;
         private readonly UserManager<User> _userManager;
 
-        public ActivitiesService(IActivitiesRepository repository, IUnitOfWork unitOfWork, 
+        public ActivitiesService(IActivitiesRepository repository, IUnitOfWork unitOfWork,
         IMapper mapper, IUserAccessor userAccessor, UserManager<User> userManager)
         : base(repository, unitOfWork, mapper)
         {
@@ -27,7 +29,7 @@ namespace Application.Services
 
         public async override Task<Result<ActivityDto>> CreateAsync(ActivityDto newEntityDto)
         {
-            var user = await _userManager.Users.FirstOrDefaultAsync(x => 
+            var user = await _userManager.Users.FirstOrDefaultAsync(x =>
                 x.UserName == _userAccessor.GetUsername());
 
             var activity = Mapper.Map<Activity>(newEntityDto);
@@ -39,12 +41,12 @@ namespace Application.Services
                 IsHost = true
             };
             activity.Attendees.Add(attendee);
-            
+
             await Repository.CreateAsync(activity);
             var result = await UnitOfWork.SaveAsync() > 0;
-            
-            return result ? 
-                Result<ActivityDto>.Success(Mapper.Map<ActivityDto>(activity)) : 
+
+            return result ?
+                Result<ActivityDto>.Success(Mapper.Map<ActivityDto>(activity)) :
                 Result<ActivityDto>.Failure("Failed to create the new entity in a database");
         }
 
@@ -73,10 +75,27 @@ namespace Application.Services
                 activity.Attendees.Add(attendance);
             }
             var result = await UnitOfWork.SaveAsync() > 0;
-            
-            return result ? 
-                Result<ActivityDto>.Success(Mapper.Map<ActivityDto>(activity)) : 
+
+            return result ?
+                Result<ActivityDto>.Success(Mapper.Map<ActivityDto>(activity)) :
                 Result<ActivityDto>.Failure("An issue occured when updating the attendance");
+        }
+
+        public override async Task<Result<IEnumerable<ActivityDto>>> GetAllAsync()
+        {
+            var dtos = Repository.GetAllAsQueryable().ProjectTo<ActivityDto>(Mapper.ConfigurationProvider, 
+                new{currentUsername = _userAccessor.GetUsername()});
+
+            return await Task.FromResult(Result<IEnumerable<ActivityDto>>.Success(dtos));
+        }
+
+        public override async Task<Result<ActivityDto>> GetAsync(Guid id)
+        {
+            var dto = await Repository.GetAllAsQueryable().ProjectTo<ActivityDto>(Mapper.ConfigurationProvider, 
+                new{currentUsername = _userAccessor.GetUsername()})
+                .SingleOrDefaultAsync(a => a.Id == id);
+                
+            return await Task.FromResult(Result<ActivityDto>.Success(dto));
         }
     }
 }
