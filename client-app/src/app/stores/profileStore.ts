@@ -60,8 +60,10 @@ export default class ProfileStore {
                 store.userStore.user?.displayName) {
                 store.userStore.setDisplayName(profile.displayName);
             }
-            this.profile = updatedProfile;
-            this.loading = false;
+            runInAction(() => {
+                this.profile = updatedProfile;
+                this.loading = false;
+            })
         } catch (error) {
             console.log(error);
             runInAction(() => this.loading = false);
