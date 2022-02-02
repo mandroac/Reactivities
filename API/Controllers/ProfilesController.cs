@@ -23,6 +23,12 @@ namespace API.Controllers
                 DisplayName = editProfileDto.DisplayName, 
                 Bio = editProfileDto.Bio
             }));
-        }  
+        }
+
+        [HttpGet("{username}/activities")]
+        public async Task<IActionResult> GetUserActivities(string username, [FromQuery] string predicate)
+        {
+            return HandleResult(await Mediator.Send(new UserActivities.Query{Username = username, Predicate = predicate}));
+        }
     }
 }

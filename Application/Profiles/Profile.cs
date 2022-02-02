@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Application.DTOs;
 using Domain.Models;
 
 namespace Application.Profiles

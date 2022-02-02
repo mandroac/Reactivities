@@ -27,7 +27,7 @@ namespace Persistence.Repositories
         public virtual IQueryable<TEntity> GetAllAsQueryable() =>
             DbSet;
 
-        public async Task<IEnumerable<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>> expression) => 
+        public async Task<IEnumerable<TEntity>> GetAsync(Expression<Func<TEntity, bool>> expression) => 
             await DbSet.Where(expression).ToListAsync();
 
         public virtual async Task CreateAsync(TEntity entity) =>

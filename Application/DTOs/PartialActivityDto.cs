@@ -1,5 +1,4 @@
 using System;
-using System.Text.Json.Serialization;
 
 namespace Application.DTOs
 {
@@ -9,7 +8,7 @@ namespace Application.DTOs
         public string Category { get; set; }
         public DateTime Date { get; set; }
 
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
         public string HostUsername { get; set; }
     }
 }
