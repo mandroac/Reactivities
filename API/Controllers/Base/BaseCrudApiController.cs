@@ -1,7 +1,9 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
+using API.Extentions;
 using Application.Core;
+using Application.Core.Paging;
 using Application.DTOs;
 using Application.Interfaces;
 using Domain.Models;
@@ -20,7 +22,7 @@ namespace API.Controllers.Base
 
         #region CRUD operations
 
-        [HttpGet]
+        [HttpGet("all")]
         public virtual async Task<IActionResult> GetAsync()
         {
             return HandleResult(await Service.GetAllAsync());
@@ -57,6 +59,22 @@ namespace API.Controllers.Base
             if(result == null) return NotFound();
             if (result.IsSuccess)
             {
+                return Ok(result.Value);
+            }
+            else
+            {
+                return BadRequest(result.Error);
+            }
+        }
+
+        protected virtual IActionResult HandlePagedResult<TResult>([AllowNull]Result<PagedList<TResult>> result)
+        {
+            if(result == null) return NotFound();
+            if (result.IsSuccess)
+            {
+                Response.AddPaginationHeader(result.Value.CurrentPage, result.Value.PageSize, 
+                    result.Value.TotalCount, result.Value.TotalPages);
+                    
                 return Ok(result.Value);
             }
             else

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Application.Core;
+using Application.Core.Filtering;
+using Application.Core.Paging;
 using Application.DTOs;
 using Application.Interfaces;
 using AutoMapper;
@@ -96,6 +98,24 @@ namespace Application.Services
                 .SingleOrDefaultAsync(a => a.Id == id);
                 
             return await Task.FromResult(Result<ActivityDto>.Success(dto));
+        }
+
+        public async Task<Result<PagedList<ActivityDto>>> GetPagedListAsync(ActivityParams parameters)
+        {
+            var query = Repository.GetAllAsQueryable()
+                .Where(a => a.Date >= parameters.StartDate)
+                .OrderBy(a => a.Date)
+                .ProjectTo<ActivityDto>(Mapper.ConfigurationProvider, new{currentUsername = _userAccessor.GetUsername()});
+
+            if(parameters.IsGoing && !parameters.IsHost)
+                query = query.Where(x => x.Attendees.Any(a => a.Username == _userAccessor.GetUsername()));
+            
+            if(parameters.IsHost && !parameters.IsGoing)
+                query = query.Where(x => x.HostUsername == _userAccessor.GetUsername());
+            
+            return Result<PagedList<ActivityDto>>.Success(
+                await PagedList<ActivityDto>.CreateAsync(query, parameters.PageNumber, parameters.PageSize)
+            );
         }
     }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Domain.Interfaces;
 using Domain.Models;
@@ -25,6 +26,9 @@ namespace Persistence.Repositories
 
         public virtual IQueryable<TEntity> GetAllAsQueryable() =>
             DbSet;
+
+        public async Task<IEnumerable<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>> expression) => 
+            await DbSet.Where(expression).ToListAsync();
 
         public virtual async Task CreateAsync(TEntity entity) =>
             await DbSet.AddAsync(entity);

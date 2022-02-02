@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using API.Controllers.Base;
+using Application.Core.Filtering;
 using Application.DTOs;
 using Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -33,6 +34,12 @@ namespace API.Controllers
         public override async Task<IActionResult> DeleteAsync(Guid id)
         {
             return await base.DeleteAsync(id);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetActivities([FromQuery] ActivityParams parameters)
+        {
+            return HandlePagedResult(await _activitiesService.GetPagedListAsync(parameters));
         }
     }
 }

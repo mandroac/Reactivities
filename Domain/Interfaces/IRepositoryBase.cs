@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace Domain.Interfaces
@@ -11,6 +12,7 @@ namespace Domain.Interfaces
         Task<TEntity> GetAsync(TKey id);
         Task<IEnumerable<TEntity>> GetAllAsync();
         IQueryable<TEntity> GetAllAsQueryable();
+        Task<IEnumerable<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>> expression);
         Task CreateAsync(TEntity entity);
         Task CreateRangeAsync(IEnumerable<TEntity> entities);
         void Update(TEntity entity);
