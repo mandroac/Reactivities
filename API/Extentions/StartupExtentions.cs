@@ -1,3 +1,4 @@
+using System;
 using System.Text;
 using System.Threading.Tasks;
 using API.Services;
@@ -13,6 +14,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
@@ -75,7 +77,7 @@ namespace API.Extentions
                 };
                 opt.Events = new JwtBearerEvents
                 {
-                    OnMessageReceived = context => 
+                    OnMessageReceived = context =>
                     {
                         var accessToken = context.Request.Query["access_token"];
                         var path = context.HttpContext.Request.Path;
@@ -103,6 +105,41 @@ namespace API.Extentions
         public static IServiceCollection SetupCustomConfigurations(this IServiceCollection services, IConfiguration config)
         {
             services.Configure<CloudinarySettings>(config.GetSection("Cloudinary"));
+            return services;
+        }
+
+        public static IServiceCollection SetupPostgresDbConnection(this IServiceCollection services, IConfiguration config)
+        {
+            services.AddDbContext<DataContext>(options =>
+            {
+                var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+
+                string connStr;
+
+                if (env == "Development")
+                {
+                    connStr = config.GetConnectionString("DefaultConnection");
+                }
+                else
+                {
+                    var connUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
+
+                    connUrl = connUrl.Replace("postgres://", string.Empty);
+                    var pgUserPass = connUrl.Split("@")[0];
+                    var pgHostPortDb = connUrl.Split("@")[1];
+                    var pgHostPort = pgHostPortDb.Split("/")[0];
+                    var pgDb = pgHostPortDb.Split("/")[1];
+                    var pgUser = pgUserPass.Split(":")[0];
+                    var pgPass = pgUserPass.Split(":")[1];
+                    var pgHost = pgHostPort.Split(":")[0];
+                    var pgPort = pgHostPort.Split(":")[1];
+
+                    connStr = $"Server={pgHost};Port={pgPort};User Id={pgUser};Password={pgPass};Database={pgDb}; SSL Mode=Require; Trust Server Certificate=true";
+                }
+
+                options.UseNpgsql(connStr);
+            });
+
             return services;
         }
     }

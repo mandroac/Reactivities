@@ -38,9 +38,7 @@ namespace API
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "API", Version = "v1" });
             });
 
-            services.AddDbContext<DataContext>(opt => {
-                opt.UseNpgsql(Configuration.GetConnectionString("DefaultConnection"));
-            });
+            services.SetupPostgresDbConnection(Configuration);
 
             services.SetupCustomServices();
             services.SetupCustomConfigurations(Configuration);

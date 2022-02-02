@@ -1,13 +1,7 @@
 using System.Threading.Tasks;
 using API.Extentions;
-using Domain.Interfaces;
-using Domain.Models;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Persistence.Configurations;
 
 namespace API
 {
