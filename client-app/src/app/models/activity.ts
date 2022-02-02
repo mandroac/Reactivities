@@ -1,4 +1,3 @@
-import { BooleanLiteral, StringLiteralLike } from "typescript";
 import { Profile } from "./profile";
 
 export interface Activity {

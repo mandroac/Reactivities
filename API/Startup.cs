@@ -39,7 +39,7 @@ namespace API
             });
 
             services.AddDbContext<DataContext>(opt => {
-                opt.UseSqlite(Configuration.GetConnectionString("DefaultConnection"));
+                opt.UseNpgsql(Configuration.GetConnectionString("DefaultConnection"));
             });
 
             services.SetupCustomServices();
@@ -67,8 +67,11 @@ namespace API
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "API v1"));
             }
 
-
             app.UseRouting();
+
+            app.UseDefaultFiles();
+
+            app.UseStaticFiles();
 
             app.UseCors("CorsPolicy");
 
@@ -80,6 +83,7 @@ namespace API
             {
                 endpoints.MapControllers();
                 endpoints.MapHub<ChatHub>("/chat");
+                endpoints.MapFallbackToController("Index", "Fallback");
             });
         }
     }

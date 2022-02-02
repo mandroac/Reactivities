@@ -5,7 +5,7 @@ import { useStore } from "../../app/stores/store";
 import ProfileEditForm from "./ProfileEditForm";
 
 export default observer(function ProfileAbout() {
-    const { profileStore: { profile, isCurrentUser, updateProfile } } = useStore();
+    const { profileStore: { profile, isCurrentUser } } = useStore();
     const [editMode, setEditMode] = useState(false);
 
     function handleEditButtonClick() {

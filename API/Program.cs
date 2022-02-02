@@ -15,24 +15,10 @@ namespace API
     {
         public static async Task Main(string[] args)
         {
-            var host = CreateHostBuilder(args).Build();
-            await host.MigrateDatabaseAsync();
-
-            using var scope = host.Services.CreateScope();
-            var services = scope.ServiceProvider;
-            try
-            {
-                var userManager = services.GetRequiredService<UserManager<User>>();
-                var activitiesRepository = services.GetRequiredService<IActivitiesRepository>();
-                var unitOfWork = services.GetRequiredService<IUnitOfWork>();
-                await Seed.SeedData(activitiesRepository, unitOfWork, userManager);
-            }
-            catch (System.Exception ex)
-            {
-                var logger = services.GetRequiredService<ILogger<Program>>();
-                logger.LogError(ex, "An error occured when seeding users");
-            }
-            await host.RunAsync();
+            await CreateHostBuilder(args)
+            .Build()
+            .MigrateDatabaseAsync().Result
+            .RunAsync();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
